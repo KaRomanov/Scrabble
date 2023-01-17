@@ -16,8 +16,8 @@
 #include <iostream>
 #include <fstream>
 
-const short defaultRounds = 10;
-const short defaultLettersCount = 10;
+size_t rounds = 10;
+size_t letters = 10;
 
 void printMainMenu()
 {
@@ -34,6 +34,34 @@ int startGame()
 
 int editSettings()
 {
+    char input;
+    std::cout << "1. Change letters count" << std::endl;
+    std::cout << "2. Changes rounds count" << std::endl;
+    std::cin >> input;
+    switch (input)
+    {
+    case '1':
+        std::cout << "How many letters do you want?" << std::endl;
+        std::cin >> letters;
+        if (letters < 3 || letters > 30)
+        {
+            std::cout << "Not a valid number" << std::endl;
+            letters = 10;
+        }
+        break;
+    case '2':
+        std::cout << "How many rounds do you want?" << std::endl;
+        std::cin >> rounds;
+        if (rounds < 1 || rounds > 100)
+        {
+            std::cout << "Not a valid number" << std::endl;
+            rounds = 10;
+        }
+        break;
+    default:
+        std::cout << "Wrong input!" << std::endl;
+        break;
+    }
     return 0;
 }
 
