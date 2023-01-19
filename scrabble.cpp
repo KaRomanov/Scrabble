@@ -9,12 +9,13 @@
  * @idnumber 7MI0600185
  * @compiler GCC
  *
- * <file with helper functions>
+ * main file
  *
  */
 
 #include <iostream>
 #include <fstream>
+#include <helper.h>
 
 size_t rounds = 10;
 size_t letters = 10;
