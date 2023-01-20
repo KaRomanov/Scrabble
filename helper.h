@@ -56,3 +56,47 @@ void printLettersOfStr(const char *str)
         ind++;
     }
 }
+
+int addWord()
+{
+    char word[16];
+    std::cout << "Input the word you want to add: " << std::endl;
+    std::cin >> word;
+
+    std::fstream dictionary;
+    dictionary.open("dictionary.txt", std::fstream::out | std::fstream::app);
+    if (dictionary.is_open() == false)
+    {
+        std::cout << "Failed to open file" << std::endl;
+        return -1;
+    }
+
+    dictionary << word << '\n';
+    dictionary.close();
+
+    return 0;
+}
+
+int isWordInFile(const char *str)
+{
+    char buffer[MAX_SIZE];
+    std::fstream dictionary;
+    dictionary.open("dictionary.txt", std::fstream::in);
+
+    if (dictionary.is_open() == false)
+    {
+        std::cout << "Something went wrong" << std::endl;
+        return -1;
+    }
+
+    while (dictionary >> buffer)
+    {
+        if (!strcomp(str, buffer))
+        {
+            return 1;
+        }
+    }
+    dictionary.close();
+
+    return 0;
+}

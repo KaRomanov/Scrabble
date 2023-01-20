@@ -31,10 +31,24 @@ void printMainMenu()
     std::cout << "Press [q] to quit" << std::endl;
 }
 
+int *mapString(const char *str)
+{
+    int *map = new int[ALPHABET_SIZE]{0};
+    size_t ind = 0;
+    while (str[ind] != '\0')
+    {
+        map[int(str[ind]) - int('a')]++;
+        ind++;
+    }
+
+    return map;
+}
+
 char *strRandomLetters()
 {
-    char *lettersStr = new char[MAX_SIZE];
+    char *lettersStr = new char[letters];
     srand(time(NULL));
+
     for (size_t i = 0; i < letters; i++)
     {
         int currentNum = rand() % 26;
@@ -44,32 +58,24 @@ char *strRandomLetters()
     return lettersStr;
 }
 
-int isWordInFile(const char *str)
-{
-    char buffer[MAX_SIZE];
-    std::fstream dictionary;
-    dictionary.open("dictionary.txt", std::fstream::in);
-
-    if (dictionary.is_open() == false)
-    {
-        std::cout << "Something went wrong" << std::endl;
-        return -1;
-    }
-
-    while (dictionary >> buffer)
-    {
-        if (!strcomp(str, buffer))
-        {
-            return 1;
-        }
-    }
-    dictionary.close();
-
-    return 0;
-}
-
 bool isWordValid(const char *letters, const char *word)
 {
+    int *lettersMap = mapString(letters);
+    int *wordMap = mapString(word);
+    for (size_t i = 0; i < ALPHABET_SIZE; i++)
+    {
+        lettersMap[i] -= wordMap[i];
+        if (lettersMap[i] < 0)
+        {
+            delete[] wordMap;
+            delete[] lettersMap;
+            return false;
+        }
+    }
+    delete[] wordMap;
+    delete[] lettersMap;
+
+    return true;
 }
 
 int startGame()
@@ -85,20 +91,26 @@ int startGame()
         std::cout << std::endl;
         std::cin >> word;
 
-        while (!isWordInFile(word) && !isWordValid(lettersStr, word))
+        repeat:
+        if (isWordInFile(word) && isWordValid(lettersStr, word))
+        {
+            points += strlen(word);
+            std::cout << "Your points so far are: " << points << std::endl;
+        }
+        else
         {
             std::cout << "Invalid word. Try again with: ";
             printLettersOfStr(lettersStr);
             std::cout << std::endl;
             std::cin >> word;
+
+            goto repeat;
         }
 
-        points += strlen(word);
         delete[] lettersStr;
-        std::cout << "Your points so far are: " << points << std::endl;
     }
-
-    std::cout << "Your total points are " << points << std::endl;
+    std::cout << std::endl;
+    std::cout << "Your total points are " << points << std::endl << std::endl;
     return 0;
 }
 
@@ -124,7 +136,7 @@ int editSettings()
     case '2':
         std::cout << "How many rounds do you want?" << std::endl;
         std::cin >> rounds;
-        if (rounds < 1 || rounds > 100)
+        if (rounds < 1 || rounds > 50)
         {
             std::cout << "Not a valid number" << std::endl;
             rounds = 10;
@@ -134,26 +146,6 @@ int editSettings()
         std::cout << "Wrong input!" << std::endl;
         break;
     }
-
-    return 0;
-}
-
-int addWord()
-{
-    char word[16];
-    std::cout << "Input the word you want to add: " << std::endl;
-    std::cin >> word;
-
-    std::fstream dictionary;
-    dictionary.open("dictionary.txt", std::fstream::out | std::fstream::app);
-    if (dictionary.is_open() == false)
-    {
-        std::cout << "Failed to open file" << std::endl;
-        return -1;
-    }
-
-    dictionary << word << '\n';
-    dictionary.close();
 
     return 0;
 }
