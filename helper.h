@@ -13,9 +13,9 @@
  *
  */
 
-size_t strlen(const char *str)
+int strlen(const char *str)
 {
-    size_t ind = 0;
+    int ind = 0;
 
     while (str[ind] != '\0')
     {
@@ -27,7 +27,7 @@ size_t strlen(const char *str)
 
 int strcomp(const char *str1, const char *str2)
 {
-    size_t ind = 0;
+    int ind = 0;
 
     if (strlen(str1) != strlen(str2))
     {
@@ -44,4 +44,15 @@ int strcomp(const char *str1, const char *str2)
     }
 
     return 0;
+}
+
+void printLettersOfStr(const char *str)
+{
+    int ind = 0;
+
+    while (str[ind] != '\0')
+    {
+        std::cout << str[ind] << " ";
+        ind++;
+    }
 }

@@ -15,10 +15,13 @@
 
 #include <iostream>
 #include <fstream>
-#include <helper.h>
+#include "helper.h"
+#include "time.h"
 
 size_t rounds = 10;
 size_t letters = 10;
+const size_t MAX_SIZE = 32;
+const size_t ALPHABET_SIZE = 26;
 
 void printMainMenu()
 {
@@ -28,17 +31,85 @@ void printMainMenu()
     std::cout << "Press [q] to quit" << std::endl;
 }
 
+char *strRandomLetters()
+{
+    char *lettersStr = new char[MAX_SIZE];
+    srand(time(NULL));
+    for (size_t i = 0; i < letters; i++)
+    {
+        int currentNum = rand() % 26;
+        lettersStr[i] = char(currentNum + 'a');
+    }
+
+    return lettersStr;
+}
+
+int isWordInFile(const char *str)
+{
+    char buffer[MAX_SIZE];
+    std::fstream dictionary;
+    dictionary.open("dictionary.txt", std::fstream::in);
+
+    if (dictionary.is_open() == false)
+    {
+        std::cout << "Something went wrong" << std::endl;
+        return -1;
+    }
+
+    while (dictionary >> buffer)
+    {
+        if (!strcomp(str, buffer))
+        {
+            return 1;
+        }
+    }
+    dictionary.close();
+
+    return 0;
+}
+
+bool isWordValid(const char *letters, const char *word)
+{
+}
+
 int startGame()
 {
+    size_t points = 0;
+
+    for (size_t i = 1; i <= rounds; i++)
+    {
+        char word[MAX_SIZE];
+        std::cout << "Round " << i << ". Available letters: ";
+        char *lettersStr = strRandomLetters();
+        printLettersOfStr(lettersStr);
+        std::cout << std::endl;
+        std::cin >> word;
+
+        while (!isWordInFile(word) && !isWordValid(lettersStr, word))
+        {
+            std::cout << "Invalid word. Try again with: ";
+            printLettersOfStr(lettersStr);
+            std::cout << std::endl;
+            std::cin >> word;
+        }
+
+        points += strlen(word);
+        delete[] lettersStr;
+        std::cout << "Your points so far are: " << points << std::endl;
+    }
+
+    std::cout << "Your total points are " << points << std::endl;
     return 0;
 }
 
 int editSettings()
 {
     char input;
+
     std::cout << "1. Change letters count" << std::endl;
     std::cout << "2. Changes rounds count" << std::endl;
     std::cin >> input;
+
     switch (input)
     {
     case '1':
@@ -63,6 +134,7 @@ int editSettings()
         std::cout << "Wrong input!" << std::endl;
         break;
     }
+
     return 0;
 }
 
@@ -79,14 +151,17 @@ int addWord()
         std::cout << "Failed to open file" << std::endl;
         return -1;
     }
+
     dictionary << word << '\n';
     dictionary.close();
+
     return 0;
 }
 
 void mainMenuLogic()
 {
     char input;
+
     do
     {
         printMainMenu();
@@ -107,7 +182,6 @@ void mainMenuLogic()
             break;
         case 'q':
             return;
-            break;
         default:
             std::cout << "wrong input" << std::endl;
             break;
